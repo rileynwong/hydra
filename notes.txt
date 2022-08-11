@@ -1,0 +1,167 @@
+//// HYDRA NOTES
+
+// DOCS: https://hydra.ojack.xyz/api/#functions/sub/0
+
+// 1 - scale, 20, speed
+noise(1, 20).out()
+
+// shape(points, size b/n 0 and 1)
+shape(6, 0.5).out()
+shape(4, .3, .01).scale().out()
+
+// how to resize shape? trick ...
+.shape(4).scale(1, 1/16)
+// shift by screen coordinates ...
+// 1/16 as inverse of screen ratio
+// scale(x, y, z)
+
+// offset
+scrollX(0.5)
+
+bpm = 180
+osc()
+.layer(osc(30, 0.1, 2))
+.mask(shape([4,5,6])).scrollX(0.5, .1)
+.out()
+
+
+// speed
+gradient(0.1)
+
+// voronoi
+voronoi().out()
+
+// solid color (r, g, b)
+solid(1, 1, 0).out
+
+/// pretty rotating gradient
+// rotate(angle, speed)
+osc(10, .1, 1).rotate(Math.PI/3, 0.3).out()
+
+// repeat
+repeatY()
+shape(4, .3, .01).repeatY().out()
+
+// kaleidoscope
+// kaleid(num edges)
+osc(25, -0.1, 0.5).kaleid(50).out(o0)
+
+// sub
+// hmm doesn't show up for some reason
+noise(5).sub(noise(1)).out(o0)
+
+// diff
+noise(5).diff(noise(1)).out(o0)
+
+// layer
+// luma: some fxns don't have transparency until u put luma on it
+// luma: makes black transparent
+osc(30).layer(osc(15).rotate(1).luma()).out(o0)
+
+// blend
+osc(9,0.1,1).blend(osc(13,0.5,5)).out()
+
+shape().scale(0.5).blend(shape(4), 0.5).out(o0)
+
+// mask - fun gradient over black/white
+// mask is transparent; compare with mult
+// play w layer+mask or call luma fxn
+osc()
+  .layer(osc(30,0.1,2)
+  .mask(shape(4))) // only select white values from src
+  .out(o0)
+
+
+// cool algae pulse
+// algae pulse
+osc(10,-0.25,1).color(0,0,1).saturate(2).kaleid(50)
+  .mask(noise(25,2).modulateScale(noise(0.25,0.05)))
+  .modulateScale(osc(6,-0.5,2).kaleid(50))
+  .mult(osc(3,-0.25,2).kaleid(50))
+  .scale(0.5,0.5,0.75)
+  .out(o0)
+
+
+// bpm / speed
+// change array speed
+bpm = 60
+osc(60,0.1,[0,1.5]).out(o0)
+
+// speed / etc: smooth, ease, fast
+//
+osc()
+    .layer(osc(30, 0.1, 2))
+    .mask(shape([4,5,6].fast(10))) // array/brackets -- sequence
+    .out()
+
+
+/// questions ?
+
+- ?: how to take audio as input?
+- ?: why out(o0) vs out()?
+    - out() vs. out(o0)
+    - o0 is an output buffer, o0 is the default, put on screen
+    - o0 to o9
+    - e.g. can set/read different buffers
+    - useful for feedback: output from one buffer and import to others using source() fxn
+    - hydra shines w feedback
+
+
+// modulation
+// modulate(osc(), amt) -- pushing around original shape
+// positive white values
+shape(4).modulate(osc(), 0.5).out()
+render(o0)
+
+// modulateRotate
+osc().modulateRotate(shape(999,0.3,0.5),1.57).out(o0)
+
+// modulateScale
+shape(4).modulateScale(noise(), 1).out()
+render(o0)
+
+// modulatePixelate
+shape(4).modulatePixelate(noise(), 1).out()
+
+shape(4).modulatePixelate(osc(), 1).out()
+render(o0)
+
+// modulateKaleid
+osc(10,0.1,2)
+  .modulateKaleid(osc(16).kaleid(999),1)
+  .out(o0)
+
+
+// input :3
+s0.init()
+src(s0).invert().out(o0)
+
+s0.initCam()
+src(s0)
+  .invert()
+  .repeat(4)
+  .modulate(noise())
+  .out(o0)
+
+// can also use images, video, etc. as input
+
+
+// AUDIO
+
+// fast fourier transform
+// a -- an audio fxn
+()=>a.fft[0]
+a.show()
+
+osc(10,0.1,2)
+  .modulateKaleid(osc(16).kaleid(999),()=>a.fft[0])
+  .out(o0)
+
+
+osc(10,0.1,2)
+  .modulateKaleid(osc(16).kaleid(999),1)
+  .scrollX(()=>a.fft[0], 1)
+  .out(o0)
+
+
+
